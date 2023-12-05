@@ -1,0 +1,96 @@
+
+// Program: Golden Bulls GOLD
+// Developer: Forex Robot Easy Team
+// Developer's Site: forexroboteasy.com
+
+// Include necessary libraries
+#include <Trade\Trade.mqh>
+#include <Charts\ChartObjects.mqh>
+#include <Math\Math.mqh>
+#include <Arrays\ArrayObj.mqh>
+
+// Define input parameters
+input double riskPercentage = 2.0; // Risk percentage per trade
+input int stopLoss = 50; // Stop loss in pips
+input int takeProfit = 100; // Take profit in pips
+
+// Define global variables
+CTrade trade;
+CArrayObj positions;
+int totalPositions;
+
+// Unique Indicators
+// Implement your unique indicators here
+
+// Backtesting Optimization
+// Implement backtesting optimization functions here
+
+// Trading Execution
+void ExecuteTrade(string symbol, ENUM_ORDER_TYPE orderType, double volume)
+{
+    double price = NormalizeDouble(SymbolInfoDouble(symbol, SYMBOL_BID), Digits);
+
+    if (orderType == ORDER_TYPE_BUY)
+    {
+        trade.Buy(volume, symbol, price, stopLoss, takeProfit);
+    }
+    else if (orderType == ORDER_TYPE_SELL)
+    {
+        trade.Sell(volume, symbol, price, stopLoss, takeProfit);
+    }
+}
+
+// Risk Management
+double CalculateVolume(string symbol, double riskPercentage)
+{
+    double accountBalance = AccountInfoDouble(ACCOUNT_BALANCE);
+    double maxRiskAmount = accountBalance * (riskPercentage / 100);
+    double pointValue = SymbolInfoDouble(symbol, SYMBOL_POINT);
+    double volume = maxRiskAmount / (stopLoss * pointValue);
+
+    return NormalizeDouble(volume, 2);
+}
+
+// Real-time Data
+void OnTick()
+{
+    // Retrieve and process real-time market data here
+}
+
+// Trade Analysis
+void AnalyzeTrades()
+{
+    // Perform trade analysis here, including profit/loss calculations, trade statistics, and equity curve plotting
+}
+
+// Program entry point
+void OnInit()
+{
+    totalPositions = trade.PositionsTotal();
+}
+
+// Program execution loop
+void OnTick()
+{
+    if (totalPositions != trade.PositionsTotal())
+    {
+        // New position opened or closed, update totalPositions variable
+        totalPositions = trade.PositionsTotal();
+    }
+
+    // Execute trades based on predefined conditions and strategies
+    if (/* Add your predefined conditions here */)
+    {
+        string symbol = Symbol();
+        ENUM_ORDER_TYPE orderType = /* Add your order type here */;
+        double volume = CalculateVolume(symbol, riskPercentage);
+
+        ExecuteTrade(symbol, orderType, volume);
+    }
+}
+
+// Program termination point
+void OnDeinit(const int reason)
+{
+    // Perform any necessary cleanup or final tasks here
+}
